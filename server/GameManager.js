@@ -66,6 +66,7 @@ class GameManager {
       throw new GameManagerError("Раунд уже начался");
     }
 
+    if (this.currentWordIdx >= this.words.length) this.reshuffle();
     if (this.currentWordIdx == undefined) this.currentWordIdx = -1;
     this.currentWordIdx += 1;
 
@@ -125,7 +126,7 @@ class GameManager {
 
   reshuffle() {
     shuffle(this.words);
-    this.currentWordIdx = 0;
+    this.currentWordIdx = undefined;
   }
 }
 
