@@ -101,9 +101,9 @@ class GameManager {
     }
 
     this.lettersToGuess -= matches.length;
-    if (this.lettersToGuess === 0) return this.endRound(true);
-
     matches.forEach(({ index }) => (this._maskedWord[index] = letter));
+
+    if (this.lettersToGuess === 0) return this.endRound(true);
     return { action: ServerAction.OK, word: this.maskedWord };
   }
 
