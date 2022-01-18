@@ -79,7 +79,8 @@ export class GameManager {
 
       case ActionResult.WIN:
       case ActionResult.LOOSE:
-        if (!wordsLeft) this.endRound(word, action);
+        if (wordsLeft) this.endRound(word, action);
+        else this.endGame(word, action);
         return;
     }
     this.signal();
