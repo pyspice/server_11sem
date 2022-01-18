@@ -33,7 +33,7 @@ class GameManager {
   }
 
   get wasGameStarted() {
-    return this.attemptsLeft == undefined;
+    return this.attemptsLeft != undefined;
   }
 
   getRoundState() {
