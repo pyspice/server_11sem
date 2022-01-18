@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const bodyParser = require("body-parser");
 const { GameManagerError } = require("./GameManager");
 
 const ClientAction = {
@@ -41,15 +42,18 @@ function configServer(server, gameManager) {
     res.sendFile(path.resolve(staticFolder, "index.html"));
   });
 
+  const jsonParser = bodyParser.json();
+
+  // const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
   server.post("/state", (req, res) => {
     const state = gameManager.getRoundState();
     res.status(200);
     res.send(JSON.stringify(state));
   });
 
-  server.post("/action", (req, res) => {
-    const query = JSON.parse(req.body);
-    const { response, code } = handleClientQuery(query);
+  server.post("/action", jsonParser, (req, res) => {
+    const { response, code } = handleClientQuery(req.body);
     res.status(code);
     res.send(JSON.stringify(response));
   });
