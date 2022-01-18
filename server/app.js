@@ -44,8 +44,6 @@ function configServer(server, gameManager) {
 
   const jsonParser = bodyParser.json();
 
-  // const urlencodedParser = bodyParser.urlencoded({ extended: false });
-
   server.post("/state", (req, res) => {
     const state = gameManager.getRoundState();
     res.status(200);
