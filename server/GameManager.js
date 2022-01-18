@@ -66,7 +66,7 @@ class GameManager {
       throw new GameManagerError("Раунд уже начался");
     }
 
-    if (this.currentWordIdx == undefined) this.currentWordIdx = 0;
+    if (this.currentWordIdx == undefined) this.currentWordIdx = -1;
     this.currentWordIdx += 1;
 
     this.isRoundRunning = true;
