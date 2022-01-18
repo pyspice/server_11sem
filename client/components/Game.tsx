@@ -8,8 +8,6 @@ import {
   RequestSender,
   ServerStateLabel,
 } from "../utils/RequestSender";
-import { StateInfo } from "./StateInfo";
-import { computed } from "mobx";
 import { WelcomePage } from "./WelcomePage";
 import { Round } from "./Round";
 import { RoundEnd } from "./RoundEnd";
@@ -23,7 +21,6 @@ export class Game extends React.Component {
   @lazyInject(Services.RequestSender)
   private readonly requestSender: RequestSender;
 
-  private infoRef = React.createRef<StateInfo>();
   private contentRef = React.createRef<any>();
 
   componentDidMount() {
@@ -31,12 +28,7 @@ export class Game extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <StateInfo ref={this.infoRef} />
-        {this.content}
-      </div>
-    );
+    return <div>{this.content}</div>;
   }
 
   private get content() {
@@ -118,7 +110,6 @@ export class Game extends React.Component {
   };
 
   private onChangeState = () => {
-    this.infoRef.current?.forceUpdate();
     this.contentRef.current?.forceUpdate();
     this.forceUpdate();
   };
