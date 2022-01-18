@@ -1,6 +1,5 @@
-import { observable } from "mobx";
-import { observer } from "mobx-react";
 import * as React from "react";
+import { ActionResult } from "../types";
 import { GameManager } from "../utils/GameManager";
 import { lazyInject } from "../utils/IoC/Container";
 import { Services } from "../utils/IoC/Services";
@@ -23,12 +22,9 @@ export class Round extends React.Component<RoundProps, RoundState> {
   private readonly gameManager: GameManager;
 
   render() {
-    const { lastActionResult } = this.gameManager;
     return (
       <div>
-        {lastActionResult != undefined && (
-          <div>Последнее действие: {lastActionResult}</div>
-        )}
+        {this.lastActionMsg}
         <input
           type="text"
           value={this.state.letter}
@@ -40,10 +36,22 @@ export class Round extends React.Component<RoundProps, RoundState> {
           onClick={this.onTryLetter}
           disabled={this.state.letter.length < 1}
         >
-          Нажми и отправь
+          Отправить
         </button>
         <button onClick={this.onSurrender}>Сдаться</button>
       </div>
+    );
+  }
+
+  private get lastActionMsg() {
+    const { lastActionResult } = this.gameManager;
+    if (lastActionResult == undefined) return null;
+    return (
+      <p>
+        {lastActionResult === ActionResult.FAIL
+          ? "Не угадали. Попробуйте еще раз!"
+          : "Верно! Так держать!"}
+      </p>
     );
   }
 
