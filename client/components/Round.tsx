@@ -25,6 +25,7 @@ export class Round extends React.Component<RoundProps, RoundState> {
     return (
       <div>
         {this.lastActionMsg}
+        Попыток осталось: {this.gameManager.attemptsLeft}
         <input
           type="text"
           value={this.state.letter}
@@ -46,13 +47,21 @@ export class Round extends React.Component<RoundProps, RoundState> {
   private get lastActionMsg() {
     const { lastActionResult } = this.gameManager;
     if (lastActionResult == undefined) return null;
-    return (
-      <p>
-        {lastActionResult === ActionResult.FAIL
-          ? "Не угадали. Попробуйте еще раз!"
-          : "Верно! Так держать!"}
-      </p>
-    );
+
+    let msg = "";
+    switch (lastActionResult) {
+      case ActionResult.FAIL:
+        msg = "Не угадали. Попробуйте еще раз!";
+        break;
+
+      case ActionResult.OK:
+        msg = "Верно! Так держать!";
+        break;
+
+      case ActionResult.USED:
+        msg = "Внимательнее! Эта буква уже была.";
+    }
+    return <p>{msg}</p>;
   }
 
   private onTryLetter = () => {
