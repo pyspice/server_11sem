@@ -31,9 +31,9 @@ function configServer(server, gameManager) {
       return { response, code: 200 };
     } catch (e) {
       if (e instanceof GameManagerError) {
-        return { response: e.message, code: 403 };
+        return { response: { error: e.message }, code: 403 };
       }
-      return { response: "Что-то пошло не так", code: 500 };
+      return { response: { error: "Что-то пошло не так" }, code: 500 };
     }
   };
 
@@ -42,11 +42,16 @@ function configServer(server, gameManager) {
   });
 
   server.post("/state", (req, res) => {
-      
+    const state = gameManager.getRoundState();
+    res.status(200);
+    res.send(JSON.stringify(state));
   });
 
   server.post("/try", (req, res) => {
     const query = JSON.parse(req.body);
+    const { response, code } = handleClientQuery(query);
+    res.status(code);
+    res.send(JSON.stringify(response));
   });
 }
 
