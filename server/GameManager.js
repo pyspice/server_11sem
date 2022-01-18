@@ -36,6 +36,10 @@ class GameManager {
     return this.attemptsLeft != undefined;
   }
 
+  get maskedWord() {
+    return this._maskedWord.join("");
+  }
+
   getRoundState() {
     if (this.isRoundRunning) {
       return {
@@ -67,7 +71,7 @@ class GameManager {
 
     this.isRoundRunning = true;
     this.usedLetters = new Set();
-    this.maskedWord = "*".repeat(this.currentWord.length);
+    this._maskedWord = Array.from(this.currentWord, () => "*");
     this.lettersToGuess = this.currentWord.length;
     this.attemptsLeft = this.attempts;
 
@@ -99,7 +103,7 @@ class GameManager {
     this.lettersToGuess -= matches.length;
     if (this.lettersToGuess.length === 0) return this.endRound(true);
 
-    this.maskedWord = this.maskedWord.replaceAll(regex, letter);
+    matches.forEach(({ index }) => (this._maskedWord[index] = letter));
     return { action: ServerAction.OK, word: this.maskedWord };
   }
 
