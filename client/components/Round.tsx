@@ -31,9 +31,9 @@ export class Round extends React.Component<RoundProps, RoundState> {
           type="text"
           value={this.state.letter}
           maxLength={1}
-          pattern="[А-Яа-яЁё]"
-          onChange={(event) => this.setState({ letter: event.target.value })}
+          onChange={this.onChange}
           autoFocus
+          onKeyPress={this.onKeyPress}
         />
         <button
           onClick={this.onTryLetter}
@@ -65,6 +65,17 @@ export class Round extends React.Component<RoundProps, RoundState> {
     }
     return <div>{msg}</div>;
   }
+
+  private onKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && this.state.letter.length > 0) {
+      this.onTryLetter();
+    }
+  };
+
+  private onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.value.match(/[а-яА-ЯёЁ]/g)) return;
+    this.setState({ letter: event.target.value });
+  };
 
   private onTryLetter = () => {
     this.props.onTryLetter(this.state.letter);
