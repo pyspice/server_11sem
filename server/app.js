@@ -47,7 +47,7 @@ function configServer(server, gameManager) {
     res.send(JSON.stringify(state));
   });
 
-  server.post("/try", (req, res) => {
+  server.post("/action", (req, res) => {
     const query = JSON.parse(req.body);
     const { response, code } = handleClientQuery(query);
     res.status(code);

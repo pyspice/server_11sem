@@ -1,31 +1,24 @@
 import { injectable } from "inversify";
 import { action, observable } from "mobx";
+import { ActionResult } from "../types";
 
-export enum State {
+export enum GameManagerState {
   BEFORE_START = "BEFORE_START",
   ROUND_RUNNING = "ROUND_RUNNING",
   ROUND_ENDED = "ROUND_ENDED",
   AFTER_END = "AFTER_END",
 }
 
-export enum ActionResult {
-  USED = "USED",
-  FAIL = "FAIL",
-  OK = "OK",
-  WIN = "WIN",
-  LOOSE = "LOOSE",
-}
-
 @injectable()
 export class GameManager {
-  @observable private _state: State;
+  @observable private _state: GameManagerState;
   @observable private _currentMask: string;
   @observable private _attemptsLeft: number;
   @observable private _lastActionResult: ActionResult;
   @observable private _wasInited: boolean = false;
 
   @action
-  init(state: State, currentMask?: string, attemptsLeft?: number) {
+  init(state: GameManagerState, currentMask?: string, attemptsLeft?: number) {
     this._state = state;
     this._currentMask = currentMask;
     this._attemptsLeft = attemptsLeft;
@@ -34,7 +27,7 @@ export class GameManager {
 
   @action
   startRound(mask: string, attempts: number) {
-    this._state = State.ROUND_RUNNING;
+    this._state = GameManagerState.ROUND_RUNNING;
     this._currentMask = mask;
     this._attemptsLeft = attempts;
   }
@@ -46,6 +39,11 @@ export class GameManager {
 
   @action
   endRound() {}
+
+  @action
+  endGame() {
+    this._state = GameManagerState.AFTER_END;
+  }
 
   get state() {
     return this._state;

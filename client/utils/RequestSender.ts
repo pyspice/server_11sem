@@ -1,16 +1,44 @@
 import { injectable } from "inversify";
+import { ActionResult } from "../types";
 
-export type Info = {};
+export type RoundInfo = {
+  word?: string;
+  attempts?: number;
+  wordsLeft?: boolean;
+};
 
-export type ServerState = {};
+export enum ServerStateLabel {
+  BEFORE_START = "BEFORE_START",
+  ROUND_RUNNING = "ROUND_RUNNING",
+  ROUND_ENDED = "ROUND_ENDED",
+}
+
+export enum ClientAction {
+  TRY = "TRY",
+  SURRENDER = "SURRENDER",
+  NEXT_ROUND = "NEXT_ROUND",
+}
+
+export type ServerState = {
+  state: ServerStateLabel;
+} & RoundInfo;
+
+export type ServerResponse = {
+  action: ActionResult;
+} & RoundInfo;
+
+export type ClientQuery = {
+  action: ClientAction;
+  letter?: string;
+};
 
 @injectable()
 export class RequestSender {
   private readonly SERVER_URL = window.location.origin;
   private readonly STATE_ENDPOINT = `${this.SERVER_URL}/state`;
-  private readonly TRY_ENDPOINT = `${this.SERVER_URL}/try`;
+  private readonly ACTION_ENDPOINT = `${this.SERVER_URL}/action`;
 
-  fetchState() {
+  fetchState(): Promise<ServerState> {
     return new Promise(async (resolve, reject) => {
       try {
         const request = new Request(this.STATE_ENDPOINT, {
@@ -23,7 +51,34 @@ export class RequestSender {
         });
         const response = await fetch(request);
 
-        let body: any;
+        let body: ServerState;
+        const text = await response.text();
+        if (text) {
+          body = JSON.parse(text);
+        }
+
+        resolve(body);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  postAction(action: ClientQuery): Promise<ServerState> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const request = new Request(this.ACTION_ENDPOINT, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: [
+            ["Accept", "application/json"],
+            ["Content-Type", "application/json"],
+          ],
+          body: JSON.stringify(action),
+        });
+        const response = await fetch(request);
+
+        let body: ServerState;
         const text = await response.text();
         if (text) {
           body = JSON.parse(text);
