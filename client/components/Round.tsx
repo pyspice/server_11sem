@@ -24,14 +24,16 @@ export class Round extends React.Component<RoundProps, RoundState> {
   render() {
     return (
       <div>
+        <div>Текущая маска: {this.gameManager.currentMask}</div>
         {this.lastActionMsg}
-        Попыток осталось: {this.gameManager.attemptsLeft}
+        <div>Попыток осталось: {this.gameManager.attemptsLeft}</div>
         <input
           type="text"
           value={this.state.letter}
           maxLength={1}
           pattern="[А-Яа-яЁё]"
           onChange={(event) => this.setState({ letter: event.target.value })}
+          autoFocus
         />
         <button
           onClick={this.onTryLetter}
@@ -61,7 +63,7 @@ export class Round extends React.Component<RoundProps, RoundState> {
       case ActionResult.USED:
         msg = "Внимательнее! Эта буква уже была.";
     }
-    return <p>{msg}</p>;
+    return <div>{msg}</div>;
   }
 
   private onTryLetter = () => {
