@@ -36,7 +36,12 @@ export class Round extends React.Component<RoundProps, RoundState> {
           pattern="[А-Яа-яЁё]"
           onChange={(event) => this.setState({ letter: event.target.value })}
         />
-        <button onClick={this.onTryLetter}>Нажми и отправь</button>
+        <button
+          onClick={this.onTryLetter}
+          disabled={this.state.letter.length < 1}
+        >
+          Нажми и отправь
+        </button>
         <button onClick={this.onSurrender}>Сдаться</button>
       </div>
     );
@@ -44,6 +49,7 @@ export class Round extends React.Component<RoundProps, RoundState> {
 
   private onTryLetter = () => {
     this.props.onTryLetter(this.state.letter);
+    this.setState({ letter: "" });
   };
 
   private onSurrender = () => {
