@@ -88,19 +88,33 @@ export class Game extends React.Component {
       return;
     }
 
-    this.gameManager.init(serverState as any, this.onChangeState);
+    const { state, word, attempts } = serverState;
+    this.gameManager.init(state as any, word, attempts, this.onChangeState);
   };
 
-  private onStartNewRound = () => {
-    this.requestSender.postAction({ action: ClientAction.NEXT_ROUND });
+  private onStartNewRound = async () => {
+    const { word, attempts } = await this.requestSender.postAction({
+      action: ClientAction.NEXT_ROUND,
+    });
+    this.gameManager.startRound(word, attempts);
   };
 
-  private onTryLetter = (letter: string) => {
-    this.requestSender.postAction({ action: ClientAction.TRY, letter });
+  private onTryLetter = async (letter: string) => {
+    const response = await this.requestSender.postAction({
+      action: ClientAction.TRY,
+      letter,
+    });
+
+    this.gameManager.onAttemptMade(response);
   };
 
-  private onSurrender = () => {
-    this.requestSender.postAction({ action: ClientAction.SURRENDER });
+  private onSurrender = async () => {
+    const { action, word, wordsLeft } = await this.requestSender.postAction({
+      action: ClientAction.SURRENDER,
+    });
+
+    if (wordsLeft) this.gameManager.endRound(word, action);
+    else this.gameManager.endGame(word, action);
   };
 
   private onChangeState = () => {

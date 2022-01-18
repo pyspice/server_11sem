@@ -64,7 +64,7 @@ export class RequestSender {
     });
   }
 
-  postAction(action: ClientQuery): Promise<ServerState> {
+  postAction(action: ClientQuery): Promise<ServerResponse> {
     return new Promise(async (resolve, reject) => {
       try {
         const request = new Request(this.ACTION_ENDPOINT, {
@@ -78,7 +78,7 @@ export class RequestSender {
         });
         const response = await fetch(request);
 
-        let body: ServerState;
+        let body: ServerResponse;
         const text = await response.text();
         if (text) {
           body = JSON.parse(text);

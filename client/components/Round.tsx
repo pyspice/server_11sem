@@ -10,9 +10,14 @@ type RoundProps = {
   onSurrender(): void;
 };
 
-@observer
-export class Round extends React.Component<RoundProps> {
-  @observable private letter: string = "";
+type RoundState = {
+  letter: string;
+};
+
+export class Round extends React.Component<RoundProps, RoundState> {
+  state = {
+    letter: "",
+  };
 
   @lazyInject(Services.GameManager)
   private readonly gameManager: GameManager;
@@ -26,10 +31,10 @@ export class Round extends React.Component<RoundProps> {
         )}
         <input
           type="text"
-          value={this.letter}
+          value={this.state.letter}
           maxLength={1}
           pattern="[А-Яа-яЁё]"
-          onChange={(event) => (this.letter = event.target.value)}
+          onChange={(event) => this.setState({ letter: event.target.value })}
         />
         <button onClick={this.onTryLetter}>Нажми и отправь</button>
         <button onClick={this.onSurrender}>Сдаться</button>
@@ -38,7 +43,7 @@ export class Round extends React.Component<RoundProps> {
   }
 
   private onTryLetter = () => {
-    this.props.onTryLetter(this.letter);
+    this.props.onTryLetter(this.state.letter);
   };
 
   private onSurrender = () => {
