@@ -101,7 +101,7 @@ class GameManager {
     }
 
     this.lettersToGuess -= matches.length;
-    if (this.lettersToGuess.length === 0) return this.endRound(true);
+    if (this.lettersToGuess === 0) return this.endRound(true);
 
     matches.forEach(({ index }) => (this._maskedWord[index] = letter));
     return { action: ServerAction.OK, word: this.maskedWord };
