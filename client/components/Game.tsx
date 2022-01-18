@@ -23,6 +23,9 @@ export class Game extends React.Component {
   @lazyInject(Services.RequestSender)
   private readonly requestSender: RequestSender;
 
+  private infoRef = React.createRef<StateInfo>();
+  private contentRef = React.createRef<any>();
+
   componentDidMount() {
     this.updateState();
   }
@@ -30,13 +33,12 @@ export class Game extends React.Component {
   render() {
     return (
       <div>
-        <StateInfo />
+        <StateInfo ref={this.infoRef} />
         {this.content}
       </div>
     );
   }
 
-  @computed
   private get content() {
     if (!this.gameManager.wasInited) {
       return "Now loading...";
@@ -44,18 +46,34 @@ export class Game extends React.Component {
 
     switch (this.gameManager.state) {
       case GameManagerState.BEFORE_START:
-        return <WelcomePage onStartGame={this.onStartNewRound} />;
+        return (
+          <WelcomePage
+            ref={this.contentRef}
+            onStartGame={this.onStartNewRound}
+          />
+        );
       case GameManagerState.ROUND_RUNNING:
         return (
           <Round
+            ref={this.contentRef}
             onTryLetter={this.onTryLetter}
             onSurrender={this.onSurrender}
           />
         );
       case GameManagerState.ROUND_ENDED:
-        return <RoundEnd onStartNewRound={this.onStartNewRound} />;
+        return (
+          <RoundEnd
+            ref={this.contentRef}
+            onStartNewRound={this.onStartNewRound}
+          />
+        );
       case GameManagerState.AFTER_END:
-        return <TryAgainPage onStartNewGame={this.onStartNewRound} />;
+        return (
+          <TryAgainPage
+            ref={this.contentRef}
+            onStartNewGame={this.onStartNewRound}
+          />
+        );
     }
   }
 
@@ -70,8 +88,7 @@ export class Game extends React.Component {
       return;
     }
 
-    let { state, word, attempts } = serverState;
-    this.gameManager.init(state as unknown as GameManagerState, word, attempts);
+    this.gameManager.init(serverState as any, this.onChangeState);
   };
 
   private onStartNewRound = () => {
@@ -84,5 +101,11 @@ export class Game extends React.Component {
 
   private onSurrender = () => {
     this.requestSender.postAction({ action: ClientAction.SURRENDER });
+  };
+
+  private onChangeState = () => {
+    this.infoRef.current?.forceUpdate();
+    this.contentRef.current?.forceUpdate();
+    this.forceUpdate();
   };
 }

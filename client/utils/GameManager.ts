@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { action, observable } from "mobx";
+import { action, computed, observable, reaction } from "mobx";
 import { ActionResult } from "../types";
 
 export enum GameManagerState {
@@ -9,59 +9,75 @@ export enum GameManagerState {
   AFTER_END = "AFTER_END",
 }
 
+type InnerState = {
+  state: GameManagerState;
+  currentMask?: string;
+  attemptsLeft?: number;
+  lastActionResult?: ActionResult;
+};
+
 @injectable()
 export class GameManager {
-  @observable private _state: GameManagerState;
-  @observable private _currentMask: string;
-  @observable private _attemptsLeft: number;
-  @observable private _lastActionResult: ActionResult;
-  @observable private _wasInited: boolean = false;
+  // hot-fix workaround bingo
+  private onChangeState: (state: InnerState) => void;
+
+  @observable private _state: InnerState = {
+    state: undefined,
+  };
 
   @action
-  init(state: GameManagerState, currentMask?: string, attemptsLeft?: number) {
+  init(state: InnerState, onChangeState: (state: InnerState) => void) {
     this._state = state;
-    this._currentMask = currentMask;
-    this._attemptsLeft = attemptsLeft;
-    this._wasInited = true;
+    this.onChangeState = onChangeState;
+    this.signal();
   }
 
   @action
   startRound(mask: string, attempts: number) {
-    this._state = GameManagerState.ROUND_RUNNING;
-    this._currentMask = mask;
-    this._attemptsLeft = attempts;
+    this._state.state = GameManagerState.ROUND_RUNNING;
+    this._state.currentMask = mask;
+    this._state.attemptsLeft = attempts;
+    this.signal();
   }
 
   @action
   setLastActionResult(actionResult: ActionResult) {
-    this._lastActionResult = actionResult;
+    this._state.lastActionResult = actionResult;
+    this.signal();
   }
 
   @action
-  endRound() {}
+  endRound() {
+    this._state.state = GameManagerState.ROUND_ENDED;
+  }
 
   @action
   endGame() {
-    this._state = GameManagerState.AFTER_END;
+    this._state.state = GameManagerState.AFTER_END;
+    this.signal();
   }
 
   get state() {
-    return this._state;
+    return this._state.state;
   }
 
   get currentMask() {
-    return this._currentMask;
+    return this._state.currentMask;
   }
 
   get attemptsLeft() {
-    return this._attemptsLeft;
+    return this._state.attemptsLeft;
   }
 
   get lastActionResult() {
-    return this._lastActionResult;
+    return this._state.lastActionResult;
   }
 
   get wasInited() {
-    return this._wasInited;
+    return this._state.state !== undefined;
   }
+
+  private signal = () => {
+    this.onChangeState(this._state);
+  };
 }
