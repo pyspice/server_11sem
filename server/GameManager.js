@@ -114,6 +114,7 @@ class GameManager {
 
     const word = this.currentWord;
     this.currentWordIdx += 1;
+    this.isRoundRunning = false;
 
     return {
       action: success ? ServerAction.WIN : ServerAction.LOOSE,
