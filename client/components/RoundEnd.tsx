@@ -25,16 +25,16 @@ export class RoundEnd extends React.Component<RoundEndProps> {
 
   private get message() {
     const { currentMask, lastActionResult } = this.gameManager;
-    if (!lastActionResult) return null;
+    if (!lastActionResult) return <div>Поиграем еще?</div>;
 
     const message =
       lastActionResult === ActionResult.LOOSE
         ? "К сожалению, вы проиграли."
         : "Поздравляем, вы отгадали.";
     return (
-      <p>
+      <div>
         {message} Слово: {currentMask}
-      </p>
+      </div>
     );
   }
 
