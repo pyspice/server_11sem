@@ -73,7 +73,8 @@ export class Round extends React.Component<RoundProps, RoundState> {
   };
 
   private onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.value.match(/[а-яА-ЯёЁ]/g)) return;
+    const letter = event.target.value;
+    if (letter && !letter.match(/[а-яА-ЯёЁ]/g)) return;
     this.setState({ letter: event.target.value });
   };
 
