@@ -1,5 +1,3 @@
-const shuffle = require("shuffle-array");
-
 const ServerAction = {
   USED: "USED",
   FAIL: "FAIL",
@@ -12,6 +10,7 @@ const ServerState = {
   BEFORE_START: "BEFORE_START",
   ROUND_RUNNING: "ROUND_RUNNING",
   ROUND_ENDED: "ROUND_ENDED",
+  AFTER_END: "AFTER_END",
 };
 
 class GameManagerError extends Error {
@@ -22,11 +21,8 @@ class GameManagerError extends Error {
 }
 
 class GameManager {
-  constructor(words, attempts) {
-    this.init(
-      words.map((word) => word.toLowerCase()),
-      attempts
-    );
+  constructor() {
+    this.init([], 0);
   }
 
   init(words, attempts) {
@@ -34,8 +30,8 @@ class GameManager {
     this.attempts = attempts;
     this.isRoundRunning = false;
 
-    this.currentWordIdx = undefined;
     this.attemptsLeft = undefined;
+    this.currentWordIdx = 0;
     this._maskedWord = undefined;
     this.usedLetters = undefined;
     this.lettersToGuess = undefined;
@@ -47,6 +43,10 @@ class GameManager {
 
   get wasGameStarted() {
     return this.attemptsLeft != undefined;
+  }
+
+  get wasGameEnded() {
+    return this.currentWordIdx >= this.words.length;
   }
 
   get maskedWord() {
@@ -68,6 +68,10 @@ class GameManager {
       };
     }
 
+    if (this.wasGameEnded) {
+      return { state: ServerState.AFTER_END };
+    }
+
     return {
       state: ServerState.ROUND_ENDED,
       wordsLeft: this.words.length > this.currentWordIdx,
@@ -79,8 +83,11 @@ class GameManager {
       throw new GameManagerError("Раунд уже начался");
     }
 
-    if (this.currentWordIdx >= this.words.length) this.reshuffle();
-    if (this.currentWordIdx == undefined) this.currentWordIdx = -1;
+    if (this.wasGameEnded) {
+      throw new GameManagerError("Все слова кончились");
+    }
+
+    if (!this.wasGameStarted) this.currentWordIdx = -1;
     this.currentWordIdx += 1;
 
     this.isRoundRunning = true;
@@ -135,11 +142,6 @@ class GameManager {
       word,
       wordsLeft: this.words.length > this.currentWordIdx,
     };
-  }
-
-  reshuffle() {
-    shuffle(this.words);
-    this.currentWordIdx = undefined;
   }
 
   restart(words, attempts) {

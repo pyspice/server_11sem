@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const { GameManagerError } = require("./GameManager");
 
 const ClientAction = {
+  START: "START",
   TRY: "TRY",
   SURRENDER: "SURRENDER",
   NEXT_ROUND: "NEXT_ROUND",
@@ -23,6 +24,9 @@ function configServer(server, gameManager) {
 
       case ClientAction.NEXT_ROUND:
         return gameManager.startRound();
+
+      case ClientAction.START:
+        return gameManager.restart(query.words, query.attempts);
     }
   };
 
