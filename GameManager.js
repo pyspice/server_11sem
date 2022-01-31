@@ -23,9 +23,22 @@ class GameManagerError extends Error {
 
 class GameManager {
   constructor(words, attempts) {
+    this.init(
+      words.map((word) => word.toLowerCase()),
+      attempts
+    );
+  }
+
+  init(words, attempts) {
     this.words = words.map((word) => word.toLowerCase());
     this.attempts = attempts;
     this.isRoundRunning = false;
+
+    this.currentWordIdx = undefined;
+    this.attemptsLeft = undefined;
+    this._maskedWord = undefined;
+    this.usedLetters = undefined;
+    this.lettersToGuess = undefined;
   }
 
   get currentWord() {
@@ -127,6 +140,11 @@ class GameManager {
   reshuffle() {
     shuffle(this.words);
     this.currentWordIdx = undefined;
+  }
+
+  restart(words, attempts) {
+    this.init(words, attempts);
+    return this.getRoundState();
   }
 }
 

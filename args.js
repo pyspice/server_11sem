@@ -1,7 +1,7 @@
 const path = require("path");
 const parseArgs = require("command-line-args");
 
-const DEFAULT_PORT = 7339;
+const DEFAULT_PORT = process.env.PORT || 7339;
 const DEFAULT_ATTEMPTS = 5;
 const DEFAULT_DICTIONARY_FILENAME = "dict.txt";
 

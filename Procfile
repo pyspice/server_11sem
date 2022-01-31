@@ -1,0 +1,1 @@
+web: cd client & npm install & npx webpack & cd ../server & npm install & node index.js

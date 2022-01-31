@@ -1,4 +1,1 @@
-client/node_modules/
-server/node_modules/
-server/static/index.js.LICENSE.txt
-server/static/index.js
+node_modules/
