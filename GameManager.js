@@ -146,7 +146,7 @@ class GameManager {
 
   restart(words, attempts) {
     this.init(words, attempts);
-    return this.getRoundState();
+    return this.startRound();
   }
 }
 
