@@ -146,14 +146,12 @@ class GameManager {
       throw new GameManagerError("Раунд еще не начался");
     }
 
-    const word = this.currentWord;
-    this.currentWordIdx += 1;
     this.isRoundRunning = false;
 
     return {
       action: success ? ServerAction.WIN : ServerAction.LOOSE,
-      word,
-      wordsLeft: this.words.length > this.currentWordIdx,
+      word: this.currentWord,
+      wordsLeft: this.words.length > this.currentWordIdx + 1,
     };
   }
 
