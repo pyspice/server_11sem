@@ -53,12 +53,17 @@ class GameManager {
     return this._maskedWord.join("");
   }
 
+  get usedStr() {
+    return [...this.usedLetters.values()].join("");
+  }
+
   getRoundState() {
     if (this.isRoundRunning) {
       return {
         state: ServerState.ROUND_RUNNING,
         word: this.maskedWord,
         attempts: this.attemptsLeft,
+        usedLetters: this.usedStr,
       };
     }
 
@@ -118,14 +123,22 @@ class GameManager {
       this.attemptsLeft -= 1;
 
       if (this.attemptsLeft === 0) return this.endRound(false);
-      return { action: ServerAction.FAIL, attempts: this.attemptsLeft };
+      return {
+        action: ServerAction.FAIL,
+        attempts: this.attemptsLeft,
+        usedLetters: this.usedStr,
+      };
     }
 
     this.lettersToGuess -= matches.length;
     matches.forEach(({ index }) => (this._maskedWord[index] = letter));
 
     if (this.lettersToGuess === 0) return this.endRound(true);
-    return { action: ServerAction.OK, word: this.maskedWord };
+    return {
+      action: ServerAction.OK,
+      word: this.maskedWord,
+      usedLetters: this.usedStr,
+    };
   }
 
   endRound(success) {
